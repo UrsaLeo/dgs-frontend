@@ -1,0 +1,35 @@
+.App {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .user-list, .user-form {
+    margin: 20px auto;
+    width: 300px;
+  }
+  
+  input {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  button {
+    margin: 5px;
+    margin-top: 10px;
+
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  
+    &:hover {
+      background: #0056b3;
+    }
+  }
+  
