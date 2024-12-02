@@ -8,14 +8,20 @@ import client from "./graphql/client";
 import { ApolloProvider } from "@apollo/client";
 import "./styles/App.scss";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+
+// Get the container
+const container = document.getElementById("root");
+
+// Create the root
+const root = ReactDOM.createRoot(container);
+
+// Render the app
 root.render(
   <ApolloProvider client={client}>
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-</ApolloProvider>,
-document.getElementById("root")
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </ApolloProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

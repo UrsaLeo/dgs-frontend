@@ -1,18 +1,37 @@
-import React, { useState } from "react";
-import { useMutation } from "@apollo/client";
-import { CREATE_USER, UPDATE_USER } from "../graphql/queries";
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@apollo/client";
+import { CREATE_USER, UPDATE_USER, GET_USER_BY_ID } from "../graphql/queries";
 
-const UserForm = ({ selectedUser, onComplete }) => {
-  const [name, setName] = useState(selectedUser?.name || "");
-  const [email, setEmail] = useState(selectedUser?.email || "");
-  const [age, setAge] = useState(selectedUser?.age || "");
-  const [phoneNumber, setPhoneNumber] = useState(selectedUser?.phone_number || "");
-  const [address, setAddress] = useState(selectedUser?.address || "");
-  const [dateOfBirth, setDateOfBirth] = useState(selectedUser?.date_of_birth || "");
-  const [profilePictureUrl, setProfilePictureUrl] = useState(selectedUser?.profile_picture_url || "");
+const UserForm = ({ selectedUserId, onComplete }) => {
+  const { data, loading, error } = useQuery(GET_USER_BY_ID, {
+    variables: { id: selectedUserId }, // Fetch the user by ID when selectedUserId changes
+    skip: !selectedUserId,  // Don't run the query if no ID is selected
+  });
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [profilePictureUrl, setProfilePictureUrl] = useState("");
 
   const [createUser] = useMutation(CREATE_USER);
   const [updateUser] = useMutation(UPDATE_USER);
+
+  // Populate the form if data is available (when editing)
+  useEffect(() => {
+    if (data && data.userById) {
+      const user = data.userById;
+      setName(user.name);
+      setEmail(user.email);
+      setAge(user.age);
+      setPhoneNumber(user.phoneNumber);
+      setAddress(user.address);
+      setDateOfBirth(user.dateOfBirth);
+      setProfilePictureUrl(user.profilePictureUrl);
+    }
+  }, [data]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,16 +39,16 @@ const UserForm = ({ selectedUser, onComplete }) => {
     const variables = {
       name,
       email,
-      age: parseInt(age, 10), // Ensure age is an integer
-      phone_number: phoneNumber,
+      age: parseInt(age, 10),
+      phoneNumber,
       address,
-      date_of_birth: dateOfBirth,
-      profile_picture_url: profilePictureUrl,
+      dateOfBirth,
+      profilePictureUrl,
     };
 
     try {
-      if (selectedUser) {
-        await updateUser({ variables: { ...variables, id: selectedUser.id } });
+      if (selectedUserId) {
+        await updateUser({ variables: { ...variables, id: selectedUserId } });
       } else {
         await createUser({ variables });
       }
@@ -39,9 +58,12 @@ const UserForm = ({ selectedUser, onComplete }) => {
     }
   };
 
+  if (loading) return <p>Loading user data...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
   return (
     <form onSubmit={handleSubmit} className="user-form">
-      <h2>{selectedUser ? "Edit User" : "Add User"}</h2>
+      <h2>{selectedUserId ? "Edit User" : "Add User"}</h2>
       <input
         type="text"
         placeholder="Name"
@@ -84,7 +106,7 @@ const UserForm = ({ selectedUser, onComplete }) => {
         value={profilePictureUrl}
         onChange={(e) => setProfilePictureUrl(e.target.value)}
       />
-      <button type="submit">{selectedUser ? "Update" : "Create"}</button>
+      <button type="submit">{selectedUserId ? "Update" : "Create"}</button>
     </form>
   );
 };

@@ -1,7 +1,8 @@
 {
-  "name": "gql-user-management",
+  "name": "dgs-frontend",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@apollo/client": "^3.11.10",
     "@testing-library/jest-dom": "^5.17.0",
